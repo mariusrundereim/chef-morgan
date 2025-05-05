@@ -1,8 +1,8 @@
 export default function Offerings() {
   return (
     <section>
-      <div className="bg-stone-900 text-white">
-        <div>
+      <div className="bg-stone-900 text-white py-20">
+        <div className="text-center">
           <h1 className="font-playfair text-3xl md:text-5xl mb-6">
             Siste kulinariske opplevelser
           </h1>

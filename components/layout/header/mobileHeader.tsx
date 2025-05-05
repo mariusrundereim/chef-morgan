@@ -12,12 +12,12 @@ export default function MobileHeader({ navLinks }: MobileHeaderProps) {
     setIsMenuOpen(!isMenuOpen);
   };
   return (
-    <header className="bg-teal-950 text-white">
+    <header className="absolute w-full text-white z-40">
       {/* Closed state: Only logo and menu bar */}
       <div className="flex items-center justify-between px-6 py-4">
         <div className="logo">
           <Link href="/" className="text-xl font-bold">
-            HERIFRA
+            Chef Morgan
           </Link>
         </div>
 
@@ -32,30 +32,16 @@ export default function MobileHeader({ navLinks }: MobileHeaderProps) {
 
       {/* Expanded state: Full navigation with main links and sub-navigation */}
       {isMenuOpen && (
-        <div className="mobile-menu">
+        <div className="mobile-men bg-amber-500">
           <nav className="flex flex-col">
             {navLinks.map((link) => (
-              <div key={link.title} className="border-b border-teal-800">
+              <div key={link.title} className="border-b border-stone-800">
                 <Link
                   href={link.href}
-                  className="block px-6 py-3 font-medium hover:text-yellow-300"
+                  className="block px-6 py-3 font-medium text-stone-800  hover:text-yellow-300"
                 >
                   {link.title}
                 </Link>
-
-                {link.subLinks && (
-                  <div className="mb-2">
-                    {link.subLinks.map((subLink) => (
-                      <Link
-                        key={subLink.title}
-                        href={subLink.href}
-                        className="block px-10 py-2 text-gray-300 hover:text-yellow-300"
-                      >
-                        {subLink.title}
-                      </Link>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
           </nav>
@@ -63,9 +49,9 @@ export default function MobileHeader({ navLinks }: MobileHeaderProps) {
           <div className="px-6 py-4 mt-4">
             <Link
               href="/book-demo"
-              className="block w-full py-2 text-center bg-yellow-500 text-teal-900 font-semibold hover:bg-yellow-400 transition-colors"
+              className="block w-full py-2 text-center bg-stone-800 text-yellow-200 font-semibold hover:bg-stone-700 transition-colors"
             >
-              Book demo!
+              Logg inn
             </Link>
           </div>
         </div>
