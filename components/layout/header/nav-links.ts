@@ -6,8 +6,8 @@ export const navLinks: NavLink[] = [
     href: "/chef-morgan",
   },
   {
-    title: "Meny",
-    href: "/meny",
+    title: "Blogg",
+    href: "/blogg",
   },
   {
     title: "Service",

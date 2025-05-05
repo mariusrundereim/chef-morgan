@@ -1,63 +1,47 @@
 import Image from "next/image";
-import { AboutPageData } from "@/app/types/about";
+import { defineQuery } from "next-sanity";
+import { sanityFetch } from "@/sanity/live";
+import { AboutPageData, SanityImage } from "@/app/types/about";
+import { urlForImage } from "@/sanity/image-url";
 
-// Mock data in Norwegian
-const mockData: AboutPageData = {
-  chef: {
-    name: "Morgan Andersen",
-    title: "Kulinarisk Kokk & Matblogger",
-    bio: "Chef Morgan er en kulinarisk kokk som blogger om mat. Han samarbeider med unge kjendiser for å nå et publikum mellom 15 og 35 år som ønsker å bli mer talentfulle innen matlaging.",
-    longBio:
-      "Med over 15 års erfaring fra kjøkkener over hele Skandinavia, har Chef Morgan utviklet en lidenskap for å gjøre gourmetmat tilgjengelig for alle. Hans unike tilnærming til matlaging kombinerer tradisjonelle norske smaker med moderne teknikker. Morgan tror at enhver kan lære å lage utsøkt mat, og han har gjort det til sitt mål å dele denne kunnskapen med en ny generasjon av matentusiaster. Gjennom sine populære blogginnlegg, videoer og samarbeid med unge kjendiser, har han bygget et fellesskap av lidenskapelige hobbykokker i hele Norge.",
-    image: "/images/chef-morgan.jpg",
-    expertise: [
-      "Nordisk Kjøkken",
-      "Bærekraftig Matlaging",
-      "Matblogging",
-      "Kulinariske Workshops",
-    ],
-    socialMedia: {
-      instagram: "@chef.morgan",
-      youtube: "ChefMorgan",
-      tiktok: "@chefmorgan",
-      twitter: "@chefmorgannorge",
-    },
+// Define the query to fetch about page data from Sanity
+const ABOUT_QUERY = defineQuery(`*[_type == "about"][0]{
+  chef {
+    name,
+    title,
+    bio,
+    longBio,
+    image,
+    expertise,
+    socialMedia {
+      instagram,
+      youtube,
+      tiktok,
+      twitter
+    }
   },
-  collaborations: [
-    {
-      id: "1",
-      name: "Emma Hansen",
-      image: "/images/emma-hansen.jpg",
-      age: 24,
-      description:
-        "Musiker og mathobbyist som samarbeider med Chef Morgan om en serie innlegg om mat og musikk.",
-    },
-    {
-      id: "2",
-      name: "Mikkel Olsen",
-      image: "/images/mikkel-olsen.jpg",
-      age: 19,
-      description:
-        "TikTok-stjerne som lærer enkle oppskrifter for studenter med Chef Morgan.",
-    },
-    {
-      id: "3",
-      name: "Sofia Berg",
-      image: "/images/sofia-berg.jpg",
-      age: 27,
-      description:
-        "Fitness-influencer som utforsker sunn og proteinrik matlaging sammen med Chef Morgan.",
-    },
-  ],
-  stats: {
-    followers: 250000,
-    recipes: 347,
-    workshops: 112,
+  collaborations[] {
+    _key,
+    name,
+    image,
+    age,
+    description
   },
-};
+  stats {
+    followers,
+    recipes,
+    workshops
+  }
+}`);
 
-export default function ChefMorganPage() {
-  const { chef, collaborations, stats } = mockData;
+export default async function ChefMorganPage() {
+  // Fetch data from Sanity
+  const { data: aboutData } = await sanityFetch<AboutPageData>({
+    query: ABOUT_QUERY,
+  });
+
+  // Destructure the data
+  const { chef, collaborations, stats } = aboutData;
 
   return (
     <main className="min-h-screen bg-white font-[Inter]">
@@ -75,30 +59,37 @@ export default function ChefMorganPage() {
               </h2>
               <p className="text-lg text-stone-800 mb-8">{chef.bio}</p>
               <div className="flex gap-4">
-                {Object.entries(chef.socialMedia).map(([platform, handle]) => (
-                  <a
-                    key={platform}
-                    href={`https://${platform}.com/${handle.replace("@", "")}`}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-stone-800 text-white hover:bg-yellow-300 hover:text-stone-800 transition-colors"
-                    aria-label={`${platform} link`}
-                  >
-                    {platform.charAt(0).toUpperCase()}
-                  </a>
-                ))}
+                {Object.entries(chef.socialMedia)
+                  .filter(([_, handle]) => handle) // Filter out null/undefined values
+                  .map(([platform, handle]) => (
+                    <a
+                      key={platform}
+                      href={`https://${platform}.com/${String(handle).replace(
+                        "@",
+                        ""
+                      )}`}
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-stone-800 text-white hover:bg-yellow-300 hover:text-stone-800 transition-colors"
+                      aria-label={`${platform} link`}
+                    >
+                      {platform.charAt(0).toUpperCase()}
+                    </a>
+                  ))}
               </div>
             </div>
             <div className="w-full md:w-1/2 order-1 md:order-2">
               <div className="relative aspect-square w-full max-w-md mx-auto overflow-hidden rounded-lg shadow-lg">
                 <div className="absolute w-full h-full bg-yellow-300 rounded-lg -rotate-3"></div>
                 <div className="absolute w-full h-full bg-white rounded-lg rotate-1 overflow-hidden">
-                  <Image
-                    src="/images/placeholder-chef.jpg"
-                    alt={chef.name}
-                    width={500}
-                    height={500}
-                    className="w-full h-full object-cover"
-                    priority
-                  />
+                  {chef.image && (
+                    <Image
+                      src={urlForImage(chef.image).url()}
+                      alt={chef.name}
+                      width={500}
+                      height={500}
+                      className="w-full h-full object-cover"
+                      priority
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -148,15 +139,16 @@ export default function ChefMorganPage() {
                     Ekspertise
                   </h3>
                   <ul className="space-y-2">
-                    {chef.expertise.map((item, index) => (
-                      <li
-                        key={index}
-                        className="flex items-center text-stone-700"
-                      >
-                        <span className="w-2 h-2 bg-yellow-300 rounded-full mr-3"></span>
-                        {item}
-                      </li>
-                    ))}
+                    {chef.expertise &&
+                      chef.expertise.map((item, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center text-stone-700"
+                        >
+                          <span className="w-2 h-2 bg-yellow-300 rounded-full mr-3"></span>
+                          {item}
+                        </li>
+                      ))}
                   </ul>
                 </div>
                 <div className="bg-stone-100 p-6 rounded-lg">
@@ -188,33 +180,44 @@ export default function ChefMorganPage() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {collaborations.map((collab) => (
-              <div
-                key={collab.id}
-                className="bg-white rounded-lg overflow-hidden shadow-md transition-transform hover:scale-105"
-              >
-                <div className="relative h-64 w-full">
-                  <Image
-                    src="/images/placeholder-collab.jpg"
-                    alt={collab.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xl font-bold text-stone-800">
-                      {collab.name}
-                    </h3>
-                    <span className="bg-yellow-300 text-stone-800 px-2 py-1 rounded text-sm font-medium">
-                      {collab.age} år
-                    </span>
+            {collaborations &&
+              collaborations.map((collab) => (
+                <div
+                  key={collab._key}
+                  className="bg-white rounded-lg overflow-hidden shadow-md transition-transform hover:scale-105"
+                >
+                  <div className="relative h-64 w-full">
+                    {collab.image ? (
+                      <Image
+                        src={urlForImage(collab.image).url()}
+                        alt={collab.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    ) : (
+                      <Image
+                        src="/images/placeholder-collab.jpg"
+                        alt={collab.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    )}
                   </div>
-                  <p className="text-stone-700">{collab.description}</p>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-xl font-bold text-stone-800">
+                        {collab.name}
+                      </h3>
+                      <span className="bg-yellow-300 text-stone-800 px-2 py-1 rounded text-sm font-medium">
+                        {collab.age} år
+                      </span>
+                    </div>
+                    <p className="text-stone-700">{collab.description}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </section>

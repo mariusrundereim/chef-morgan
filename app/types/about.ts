@@ -1,22 +1,43 @@
+export interface SanityImage {
+  _type: string;
+  asset: {
+    _ref: string;
+    _type: string;
+  };
+  hotspot?: {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  };
+  crop?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
+}
+
 export interface ChefProfile {
   name: string;
   title: string;
   bio: string;
   longBio: string;
-  image: string;
+  image: SanityImage;
   expertise: string[];
   socialMedia: {
-    instagram?: string;
-    youtube?: string;
-    tiktok?: string;
-    twitter?: string;
+    instagram?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+    twitter?: string | null;
+    [key: string]: string | null | undefined;
   };
 }
 
 export interface Collaboration {
-  id: string;
+  _key: string;
   name: string;
-  image: string;
+  image: SanityImage;
   age: number;
   description: string;
 }
