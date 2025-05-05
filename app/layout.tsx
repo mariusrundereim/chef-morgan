@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/header";
+import { SanityLive } from "@/sanity/live";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({
@@ -26,6 +27,7 @@ export default function RootLayout({
       >
         <Header />
         {children}
+        <SanityLive />
       </body>
     </html>
   );
