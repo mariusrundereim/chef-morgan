@@ -9,12 +9,4 @@ export const navLinks: NavLink[] = [
     title: "Blogg",
     href: "/blogg",
   },
-  {
-    title: "Service",
-    href: "/service",
-  },
-  {
-    title: "Kontakt",
-    href: "/kontakt",
-  },
 ];

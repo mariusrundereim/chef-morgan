@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/header";
+// import Header from "@/components/layout/header";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { SanityLive } from "@/sanity/live";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -25,7 +26,6 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} font-sans min-h-screen grid grid-rows-[auto_1fr_auto] grid-cols-1`}
       >
-        <Header />
         {children}
         <SanityLive />
       </body>

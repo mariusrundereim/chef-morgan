@@ -3,6 +3,7 @@ import { defineQuery } from "next-sanity";
 import { sanityFetch } from "@/sanity/live";
 import { AboutPageData, SanityImage } from "@/app/types/about";
 import { urlForImage } from "@/sanity/image-url";
+import Header from "@/components/layout/header";
 
 // Define the query to fetch about page data from Sanity
 const ABOUT_QUERY = defineQuery(`*[_type == "about"][0]{
@@ -45,6 +46,7 @@ export default async function ChefMorganPage() {
 
   return (
     <main className="min-h-screen bg-white font-[Inter]">
+      <Header />
       {/* Hero Section */}
       <section className="bg-stone-100 py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-8">

@@ -1,9 +1,10 @@
 import Cta from "@/components/sections/cta";
 import Hero from "@/components/sections/hero/hero";
 import Offerings from "@/components/sections/offerings/offerings";
-
+import { ThemeProvider } from "@/components/ThemeProvider";
+import Header from "@/components/layout/header";
 const offeringsData = {
-  title: "Siste kulinariske opplevelser", // "Latest culinary experiences" in Norwegian
+  title: "Siste kulinariske opplevelser",
   cards: [
     {
       id: "1",
@@ -62,16 +63,20 @@ const offeringsData = {
   ],
 };
 
-export default function Home() {
+export default async function Home() {
+  // const offerings = await getOfferings();
   return (
-    <div>
-      <Hero />
-      <Offerings
-        title={offeringsData.title}
-        cards={offeringsData.cards}
-        showLatest={true}
-      />
-      <Cta />
-    </div>
+    <ThemeProvider navTheme="dark">
+      <Header />
+      <div>
+        <Hero />
+        <Offerings
+          title={offeringsData.title}
+          cards={offeringsData.cards}
+          showLatest={true}
+        />
+        <Cta />
+      </div>
+    </ThemeProvider>
   );
 }

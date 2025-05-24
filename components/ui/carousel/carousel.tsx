@@ -1,10 +1,19 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, ReactNode } from "react";
 import { CarouselProps } from "@/app/types/carousel";
 import OfferingsCard from "@/components/ui/cards/offeringCard/offeringCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function Carousel({ cards, className = "" }: CarouselProps) {
+// Enhanced CarouselProps with optional custom card component
+interface EnhancedCarouselProps extends CarouselProps {
+  cardComponent?: (cardProps: any) => ReactNode;
+}
+
+export default function Carousel({
+  cards,
+  className = "",
+  cardComponent,
+}: EnhancedCarouselProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [cardsPerPage, setCardsPerPage] = useState(3);
 
@@ -66,7 +75,7 @@ export default function Carousel({ cards, className = "" }: CarouselProps) {
         </button>
         <button
           onClick={nextPage}
-          className=" w-10 h-10 flex items-center justify-center border border-gray-200 hover:bg-yellow-500"
+          className="w-10 h-10 flex items-center justify-center border border-gray-200 hover:bg-yellow-500"
           aria-label="Next"
         >
           <ChevronRight className="h-5 w-5" />
@@ -77,7 +86,7 @@ export default function Carousel({ cards, className = "" }: CarouselProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {currentPageCards.map((card, index) => (
           <div key={`${card.id || index}`} className="h-full">
-            <OfferingsCard {...card} />
+            {cardComponent ? cardComponent(card) : <OfferingsCard {...card} />}
           </div>
         ))}
       </div>
