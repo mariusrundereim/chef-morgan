@@ -32,6 +32,9 @@ export default function BlogCarousel({
   const [currentPage, setCurrentPage] = useState(0);
   const [cardsPerPage, setCardsPerPage] = useState(3);
 
+  // Add null check and default value
+  const safePosts = posts || [];
+
   // Determine cards per page based on screen width
   const updateCardsPerPage = useCallback(() => {
     if (typeof window !== "undefined") {
@@ -52,8 +55,8 @@ export default function BlogCarousel({
     return () => window.removeEventListener("resize", updateCardsPerPage);
   }, [updateCardsPerPage]);
 
-  // Calculate total pages
-  const totalPages = Math.ceil(posts.length / cardsPerPage);
+  // Calculate total pages - use safePosts
+  const totalPages = Math.ceil(safePosts.length / cardsPerPage);
 
   // Navigation functions
   const prevPage = () => {
@@ -64,16 +67,16 @@ export default function BlogCarousel({
     setCurrentPage((prev) => (prev === totalPages - 1 ? 0 : prev + 1));
   };
 
-  // Get current page posts
+  // Get current page posts - use safePosts
   const getCurrentPagePosts = () => {
     const startIndex = currentPage * cardsPerPage;
-    return posts.slice(startIndex, startIndex + cardsPerPage);
+    return safePosts.slice(startIndex, startIndex + cardsPerPage);
   };
 
   const currentPagePosts = getCurrentPagePosts();
 
-  // Don't render if no posts
-  if (!posts || posts.length === 0) {
+  // Don't render if no posts - use safePosts
+  if (!safePosts || safePosts.length === 0) {
     return (
       <section className={`py-16 bg-stone-50 ${className}`}>
         <div className="container mx-auto px-4">
@@ -160,7 +163,7 @@ export default function BlogCarousel({
         <div className="text-center mt-12">
           <a
             href="/blogg"
-            className="inline-flex items-center bg-stone-800 hover:bg-yellow-400 text-white hover:text-stone-800 font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="inline-flex items-center bg-stone-800 hover:bg-yellow-400 text-white hover:text-stone-800 font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg group"
           >
             <span className="mr-2">Se Alle Innlegg</span>
             <svg
